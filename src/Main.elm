@@ -30,7 +30,10 @@ update msg model =
             model + 1
 
         Decrement ->
-            model - 1
+            if model > 0 then
+                model - 1
+            else
+                model
 
 
 view : Model -> Html Msg
