@@ -3,21 +3,16 @@ module Main exposing (..)
 import Html exposing (text)
 
 
-four : Float
-four =
-    sqrt 16
+add : number -> number -> number
+add x y =
+    x + y
 
 
-eleven : Float
-eleven =
-    max 2 11
-
-
-twenty : Float
-twenty =
-    max (sqrt 100) (4 * 5)
+factorial : Int -> Int
+factorial n =
+    List.product (List.range 1 n)
 
 
 main : Html.Html msg
 main =
-    text (toString [ four, eleven, twenty ])
+    factorial 4 |> add 1 |> toString |> text
