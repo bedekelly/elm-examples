@@ -1,91 +1,93 @@
 module Main exposing (..)
 
-import Html
-    exposing
-        ( beginnerProgram
-        , fieldset
-        , label
-        , text
-        , input
-        , Html
-        , div
-        , ul
-        , li
-        )
-import Html.Attributes exposing (style, type_)
+import Markdown
+import Html exposing (Html, fieldset, div, label, text, input)
+import Html.Attributes exposing (style, type_, name)
 import Html.Events exposing (onClick)
 
 
-main : Program Never Model Msg
 main =
-    beginnerProgram { model = model, update = update, view = view }
+    Html.beginnerProgram { model = chapter1, update = update, view = view }
 
 
 type alias Model =
-    { notifications : Bool
-    , autoplay : Bool
-    , location : Bool
+    { fontSize : FontSize
+    , content : String
     }
 
 
-model : Model
-model =
-    Model False False False
+type FontSize
+    = Small
+    | Medium
+    | Large
+
+
+chapter1 : Model
+chapter1 =
+    Model Medium intro
+
+
+intro : String
+intro =
+    """
+# Anna Karenina
+
+## Chapter 1
+
+Happy families are all alike; every unhappy family is unhappy in its own way.
+
+Everything was in confusion in the Oblonskys' house. The wife had discovered
+that the husband was carrying on an intrigue with a French girl, who had been
+a governess in their family, and she had announced to her husband that she
+could not go on living in the same house with him...
+"""
 
 
 type Msg
-    = ToggleNotifications
-    | ToggleAutoplay
-    | ToggleLocation
+    = SwitchTo FontSize
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        ToggleNotifications ->
-            { model | notifications = (not model.notifications) }
-
-        ToggleAutoplay ->
-            { model | autoplay = (not model.autoplay) }
-
-        ToggleLocation ->
-            { model | location = (not model.location) }
+        SwitchTo newFontSize ->
+            { model | fontSize = newFontSize }
 
 
 view : Model -> Html Msg
 view model =
     div []
         [ fieldset []
-            [ checkbox ToggleNotifications "Email Notifications"
-            , checkbox ToggleAutoplay "Video Autoplay"
-            , checkbox ToggleLocation "Use Location"
+            [ radio "Small" (SwitchTo Small)
+            , radio "Medium" (SwitchTo Medium)
+            , radio "Large" (SwitchTo Large)
             ]
-        , ul []
-            [ checkbox_readout "Email Notifications" model.notifications
-            , checkbox_readout "Video Autoplay" model.autoplay
-            , checkbox_readout "Use Location" model.location
-            ]
+        , Markdown.toHtml [ sizeToStyle model.fontSize ] model.content
         ]
 
 
-checkbox : Msg -> String -> Html Msg
-checkbox msg name =
+radio : String -> msg -> Html msg
+radio title msg =
     label
-        [ style [ ( "padding", "20px" ) ] ]
-        [ input [ type_ "checkbox", onClick msg ] []
-        , text name
+        [ style [ ( "padding", "20px" ) ]
+        ]
+        [ input [ type_ "radio", name "font-size", onClick msg ] []
+        , text title
         ]
 
 
-checkbox_readout : String -> Bool -> Html msg
-checkbox_readout title checked =
-    li []
-        [ text
-            (title
-                ++ ": "
-                ++ if checked then
-                    "✔︎"
-                   else
-                    "x"
-            )
-        ]
+sizeToStyle : FontSize -> Html.Attribute msg
+sizeToStyle size =
+    let
+        fontSize =
+            case size of
+                Small ->
+                    "0.8em"
+
+                Medium ->
+                    "1em"
+
+                Large ->
+                    "1.2em"
+    in
+        style [ ( "font-size", fontSize ) ]
