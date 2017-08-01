@@ -1,67 +1,59 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, input, text)
-import Html.Attributes exposing (type_, placeholder, style)
-import Html.Events exposing (onInput)
+import Html exposing (beginnerProgram, fieldset, label, text, input, Html)
+import Html.Attributes exposing (style, type_)
+import Html.Events exposing (onClick)
 
 
+main : Program Never Model Msg
 main =
-    Html.beginnerProgram { model = model, view = view, update = update }
+    beginnerProgram { model = model, update = update, view = view }
 
 
 type alias Model =
-    { name : String
-    , password : String
-    , passwordAgain : String
-    , hasTyped : Bool
+    { notifications : Bool
+    , autoplay : Bool
+    , location : Bool
     }
 
 
 model : Model
 model =
-    Model "" "" "" False
+    Model False False False
 
 
 type Msg
-    = Name String
-    | Password String
-    | PasswordAgain String
+    = ToggleNotifications
+    | ToggleAutoplay
+    | ToggleLocation
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Name name ->
-            { model | name = name, hasTyped = True }
+        ToggleNotifications ->
+            { model | notifications = (not model.notifications) }
 
-        Password password ->
-            { model | password = password, hasTyped = True }
+        ToggleAutoplay ->
+            { model | autoplay = (not model.autoplay) }
 
-        PasswordAgain passwordAgain ->
-            { model | passwordAgain = passwordAgain, hasTyped = True }
+        ToggleLocation ->
+            { model | location = (not model.location) }
 
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ input [ type_ "text", placeholder "Name", onInput Name ] []
-        , input [ type_ "password", placeholder "Password", onInput Password ] []
-        , input [ type_ "password", placeholder "Password (Again)", onInput PasswordAgain ] []
-        , viewValidation model
+    fieldset []
+        [ checkbox ToggleNotifications "Email Notifications"
+        , checkbox ToggleAutoplay "Video Autoplay"
+        , checkbox ToggleLocation "Use Location"
         ]
 
 
-viewValidation : Model -> Html msg
-viewValidation model =
-    let
-        ( color, message ) =
-            if (not model.hasTyped) then
-                ( "green", "OK" )
-            else if (model.password == model.passwordAgain) && (model.password /= "") then
-                ( "green", "OK" )
-            else if model.password == "" then
-                ( "red", "Password cannot be empty!" )
-            else
-                ( "red", "Passwords do not match!" )
-    in
-        div [ style [ ( "color", color ) ] ] [ text message ]
+checkbox : Msg -> String -> Html Msg
+checkbox msg name =
+    label
+        [ style [ ( "padding", "20px" ) ] ]
+        [ input [ type_ "checkbox", onClick msg ] []
+        , text name
+        ]
