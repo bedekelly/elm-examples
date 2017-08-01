@@ -1,21 +1,33 @@
 module Main exposing (..)
 
-import String
 import Html exposing (text)
 
 
-capitalize : String -> String
-capitalize word =
-    let
-        firstLetter =
-            String.left 1 word
+primitiveCount : Int -> String
+primitiveCount number =
+    case number of
+        1 ->
+            "one"
 
-        otherLetters =
-            String.dropLeft 1 word
-    in
-        String.toUpper firstLetter ++ otherLetters
+        2 ->
+            "two"
+
+        3 ->
+            "three"
+
+        4 ->
+            "four"
+
+        _ ->
+            "many"
 
 
 main : Html.Html msg
 main =
-    "who ate all the pie?" |> capitalize |> text
+    text
+        (String.join ", " primitiveNumbers)
+
+
+primitiveNumbers : List String
+primitiveNumbers =
+    List.map primitiveCount [ 1, 2, 3, 4, 5, 6, 7 ]
