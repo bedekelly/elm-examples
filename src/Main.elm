@@ -13,12 +13,13 @@ type alias Model =
     { name : String
     , password : String
     , passwordAgain : String
+    , hasTyped : Bool
     }
 
 
 model : Model
 model =
-    Model "" "" ""
+    Model "" "" "" False
 
 
 type Msg
@@ -31,13 +32,13 @@ update : Msg -> Model -> Model
 update msg model =
     case msg of
         Name name ->
-            { model | name = name }
+            { model | name = name, hasTyped = True }
 
         Password password ->
-            { model | password = password }
+            { model | password = password, hasTyped = True }
 
         PasswordAgain passwordAgain ->
-            { model | passwordAgain = passwordAgain }
+            { model | passwordAgain = passwordAgain, hasTyped = True }
 
 
 view : Model -> Html Msg
@@ -54,8 +55,12 @@ viewValidation : Model -> Html msg
 viewValidation model =
     let
         ( color, message ) =
-            if model.password == model.passwordAgain then
+            if (not model.hasTyped) then
                 ( "green", "OK" )
+            else if (model.password == model.passwordAgain) && (model.password /= "") then
+                ( "green", "OK" )
+            else if model.password == "" then
+                ( "red", "Password cannot be empty!" )
             else
                 ( "red", "Passwords do not match!" )
     in
