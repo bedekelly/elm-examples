@@ -1,21 +1,21 @@
 module Main exposing (..)
 
+import String
 import Html exposing (text)
 
 
-isOver9000 : Int -> String
-isOver9000 powerLevel =
-    if powerLevel > 9000 then
-        "It's over 9000!"
-    else
-        "meh, nothing special."
+capitalize : String -> String
+capitalize word =
+    let
+        firstLetter =
+            String.left 1 word
 
-
-assessments : List String
-assessments =
-    List.map isOver9000 [ 5, 1234, 6789, 9999 ]
+        otherLetters =
+            String.dropLeft 1 word
+    in
+        String.toUpper firstLetter ++ otherLetters
 
 
 main : Html.Html msg
 main =
-    toString assessments |> text
+    "who ate all the pie?" |> capitalize |> text
