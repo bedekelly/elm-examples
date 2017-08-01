@@ -3,27 +3,27 @@ module Main exposing (..)
 import Html exposing (text)
 
 
-four : number
+four : Int
 four =
     2 + 2
 
 
-sixteen : number
+sixteen : Int
 sixteen =
     8 * 2
 
 
-eleven : number
+eleven : Int
 eleven =
     4 * 3 - 1
 
 
-thirteen : number
+thirteen : Int
 thirteen =
     (4 * 3) + 1
 
 
-isTeenage : comparable -> Bool
+isTeenage : Int -> Bool
 isTeenage age =
     age > 12 && age < 20
 
