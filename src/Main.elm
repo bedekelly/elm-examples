@@ -9,11 +9,8 @@ isNotSpace char =
 
 
 weirdReversal : String -> String
-weirdReversal string =
-    string
-        |> String.reverse
-        |> String.toUpper
-        |> String.filter isNotSpace
+weirdReversal =
+    String.reverse >> String.toUpper >> String.filter isNotSpace
 
 
 main : Html.Html msg
