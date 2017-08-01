@@ -1,18 +1,18 @@
 module Main exposing (..)
 
-import Html exposing (text)
+import Html exposing (text, Html)
 
 
-isNotSpace : Char -> Bool
-isNotSpace char =
-    char /= ' '
+isNear : Int -> Int -> Bool
+isNear x y =
+    abs (x - y) < 10
 
 
-weirdReversal : String -> String
-weirdReversal =
-    String.reverse >> String.toUpper >> String.filter isNotSpace
+increment : Int -> Int
+increment x =
+    x + 1
 
 
-main : Html.Html msg
+main : Html msg
 main =
-    text (weirdReversal "s t r e s s e d ")
+    text (toString (isNear 72 (increment 75)))
