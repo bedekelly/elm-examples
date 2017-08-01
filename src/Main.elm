@@ -3,16 +3,19 @@ module Main exposing (..)
 import Html exposing (text)
 
 
-add : number -> number -> number
-add x y =
-    x + y
+isOver9000 : Int -> String
+isOver9000 powerLevel =
+    if powerLevel > 9000 then
+        "It's over 9000!"
+    else
+        "meh, nothing special."
 
 
-factorial : Int -> Int
-factorial n =
-    List.product (List.range 1 n)
+assessments : List String
+assessments =
+    List.map isOver9000 [ 5, 1234, 6789, 9999 ]
 
 
 main : Html.Html msg
 main =
-    factorial 4 |> add 1 |> toString |> text
+    toString assessments |> text
