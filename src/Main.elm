@@ -1,45 +1,38 @@
 module Main exposing (..)
 
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
+import Html exposing (Html, Attribute, beginnerProgram, text, div, input)
+import Html.Attributes exposing (placeholder, style)
+import Html.Events exposing (onInput)
 
 
-main : Program Never Model Msg
+main : Program Never String Msg
 main =
-    Html.beginnerProgram { model = model, view = view, update = update }
-
-
-type alias Model =
-    Int
-
-
-model : Model
-model =
-    0
+    beginnerProgram { model = "", view = view, update = update }
 
 
 type Msg
-    = Increment
-    | Decrement
+    = NewContent String
 
 
-update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        Increment ->
-            model + 1
-
-        Decrement ->
-            if model > 0 then
-                model - 1
-            else
-                model
+update : Msg -> a -> String
+update (NewContent content) oldContent =
+    content
 
 
-view : Model -> Html Msg
-view model =
+view : String -> Html Msg
+view content =
     div []
-        [ button [ onClick Decrement ] [ text "-" ]
-        , div [] [ text (toString model) ]
-        , button [ onClick Increment ] [ text "+" ]
+        [ input [ placeholder "Text to reverse", onInput NewContent, myStyle ] []
+        , div [ myStyle ] [ text (String.reverse content) ]
+        ]
+
+
+myStyle : Attribute msg
+myStyle =
+    style
+        [ ( "width", "100%" )
+        , ( "height", "40px" )
+        , ( "padding", "10px 0" )
+        , ( "font-size", "2em" )
+        , ( "text-align", "center" )
         ]
