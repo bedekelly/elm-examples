@@ -1,30 +1,42 @@
 module Main exposing (..)
 
-import Markdown
-import Html
+import Html exposing (Html, button, div, text)
+import Html.Events exposing (onClick)
 
 
-main : Html.Html msg
+main : Program Never Model Msg
 main =
-    Markdown.toHtml [] markdown
+    Html.beginnerProgram { model = model, view = view, update = update }
 
 
-markdown : String
-markdown =
-    """
-# This is Markdown
+type alias Model =
+    Int
 
-[Markdown](https://daringfireball.net/projects/markdown) lets you write content
-in a really natural way.
 
-    * You can have lists, like this one
-    * Make things **bold** or _italic_
-    * Embed snippets of `code`
-    * Create [links](/)
-    * ...
+model : Model
+model =
+    0
 
-The [elm-markdown][] package parses all this content, allowing you easily
-to generate content blocks of `Element` or `HTML`.
 
-[elm-markdown]: http://package.elm-lang.org/packages/evancz/elm-markdown/latest
-"""
+type Msg
+    = Increment
+    | Decrement
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Increment ->
+            model + 1
+
+        Decrement ->
+            model - 1
+
+
+view : Model -> Html Msg
+view model =
+    div []
+        [ button [ onClick Decrement ] [ text "-" ]
+        , div [] [ text (toString model) ]
+        , button [ onClick Increment ] [ text "+" ]
+        ]
