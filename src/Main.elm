@@ -1,38 +1,62 @@
 module Main exposing (..)
 
-import Html exposing (Html, Attribute, beginnerProgram, text, div, input)
-import Html.Attributes exposing (placeholder, style)
+import Html exposing (Html, div, input, text)
+import Html.Attributes exposing (type_, placeholder, style)
 import Html.Events exposing (onInput)
 
 
-main : Program Never String Msg
 main =
-    beginnerProgram { model = "", view = view, update = update }
+    Html.beginnerProgram { model = model, view = view, update = update }
+
+
+type alias Model =
+    { name : String
+    , password : String
+    , passwordAgain : String
+    }
+
+
+model : Model
+model =
+    Model "" "" ""
 
 
 type Msg
-    = NewContent String
+    = Name String
+    | Password String
+    | PasswordAgain String
 
 
-update : Msg -> a -> String
-update (NewContent content) oldContent =
-    content
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        Name name ->
+            { model | name = name }
+
+        Password password ->
+            { model | password = password }
+
+        PasswordAgain passwordAgain ->
+            { model | passwordAgain = passwordAgain }
 
 
-view : String -> Html Msg
-view content =
+view : Model -> Html Msg
+view model =
     div []
-        [ input [ placeholder "Text to reverse", onInput NewContent, myStyle ] []
-        , div [ myStyle ] [ text (String.reverse content) ]
+        [ input [ type_ "text", placeholder "Name", onInput Name ] []
+        , input [ type_ "password", placeholder "Password", onInput Password ] []
+        , input [ type_ "password", placeholder "Password (Again)", onInput PasswordAgain ] []
+        , viewValidation model
         ]
 
 
-myStyle : Attribute msg
-myStyle =
-    style
-        [ ( "width", "100%" )
-        , ( "height", "40px" )
-        , ( "padding", "10px 0" )
-        , ( "font-size", "2em" )
-        , ( "text-align", "center" )
-        ]
+viewValidation : Model -> Html msg
+viewValidation model =
+    let
+        ( color, message ) =
+            if model.password == model.passwordAgain then
+                ( "green", "OK" )
+            else
+                ( "red", "Passwords do not match!" )
+    in
+        div [ style [ ( "color", color ) ] ] [ text message ]
