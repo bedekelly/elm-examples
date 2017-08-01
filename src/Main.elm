@@ -1,40 +1,33 @@
 module Main exposing (..)
 
-import Html exposing (text)
-
-
-four : Int
-four =
-    2 + 2
-
-
-sixteen : Int
-sixteen =
-    8 * 2
-
-
-eleven : Int
-eleven =
-    4 * 3 - 1
-
-
-thirteen : Int
-thirteen =
-    (4 * 3) + 1
-
-
-isTeenage : Int -> Bool
-isTeenage age =
-    age > 12 && age < 20
+import Html exposing (li, ol, text)
 
 
 main : Html.Html msg
 main =
-    text
-        (toString
-            [ isTeenage four
-            , isTeenage sixteen
-            , isTeenage eleven
-            , isTeenage thirteen
-            ]
-        )
+    viewStrings
+        [ "Hello"
+        , "ho" ++ "la"
+        , String.reverse "stressed"
+        , String.right 4 "foxglove"
+        , String.left 20 multilineString
+        ]
+
+
+multilineString : String
+multilineString =
+    """
+All happy families are alike; each unhappy family is unhappy in its own way.
+
+All was confusion in the Oblonskys' house...
+"""
+
+
+viewStrings : List String -> Html.Html msg
+viewStrings strings =
+    ol [] (List.map viewString strings)
+
+
+viewString : String -> Html.Html msg
+viewString string =
+    li [] [ text string ]
