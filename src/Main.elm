@@ -3,16 +3,19 @@ module Main exposing (..)
 import Html exposing (text)
 
 
-increment : Int -> Int
-increment n =
-    n + 1
+isNotSpace : Char -> Bool
+isNotSpace char =
+    char /= ' '
 
 
-add1 : Int -> Int
-add1 =
-    \n -> n + 1
+weirdReversal : String -> String
+weirdReversal string =
+    string
+        |> String.reverse
+        |> String.toUpper
+        |> String.filter isNotSpace
 
 
 main : Html.Html msg
 main =
-    add1 40 |> increment |> toString |> text
+    text (weirdReversal "s t r e s s e d ")
