@@ -1,6 +1,17 @@
 module Main exposing (..)
 
-import Html exposing (beginnerProgram, fieldset, label, text, input, Html)
+import Html
+    exposing
+        ( beginnerProgram
+        , fieldset
+        , label
+        , text
+        , input
+        , Html
+        , div
+        , ul
+        , li
+        )
 import Html.Attributes exposing (style, type_)
 import Html.Events exposing (onClick)
 
@@ -43,10 +54,17 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    fieldset []
-        [ checkbox ToggleNotifications "Email Notifications"
-        , checkbox ToggleAutoplay "Video Autoplay"
-        , checkbox ToggleLocation "Use Location"
+    div []
+        [ fieldset []
+            [ checkbox ToggleNotifications "Email Notifications"
+            , checkbox ToggleAutoplay "Video Autoplay"
+            , checkbox ToggleLocation "Use Location"
+            ]
+        , ul []
+            [ checkbox_readout "Email Notifications" model.notifications
+            , checkbox_readout "Video Autoplay" model.autoplay
+            , checkbox_readout "Use Location" model.location
+            ]
         ]
 
 
@@ -56,4 +74,18 @@ checkbox msg name =
         [ style [ ( "padding", "20px" ) ] ]
         [ input [ type_ "checkbox", onClick msg ] []
         , text name
+        ]
+
+
+checkbox_readout : String -> Bool -> Html msg
+checkbox_readout title checked =
+    li []
+        [ text
+            (title
+                ++ ": "
+                ++ if checked then
+                    "✔︎"
+                   else
+                    "x"
+            )
         ]
