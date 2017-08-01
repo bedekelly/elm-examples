@@ -3,31 +3,16 @@ module Main exposing (..)
 import Html exposing (text)
 
 
-primitiveCount : Int -> String
-primitiveCount number =
-    case number of
-        1 ->
-            "one"
+increment : Int -> Int
+increment n =
+    n + 1
 
-        2 ->
-            "two"
 
-        3 ->
-            "three"
-
-        4 ->
-            "four"
-
-        _ ->
-            "many"
+add1 : Int -> Int
+add1 =
+    \n -> n + 1
 
 
 main : Html.Html msg
 main =
-    text
-        (String.join ", " primitiveNumbers)
-
-
-primitiveNumbers : List String
-primitiveNumbers =
-    List.map primitiveCount [ 1, 2, 3, 4, 5, 6, 7 ]
+    add1 40 |> increment |> toString |> text
