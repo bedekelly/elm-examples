@@ -1,115 +1,67 @@
 module Main exposing (..)
 
-import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (..)
-import Http
-import Json.Decode as Decode
+import Html exposing (Html)
+import Svg exposing (..)
+import Svg.Attributes exposing (..)
+import Time exposing (Time, second)
 
 
 main : Program Never Model Msg
 main =
     Html.program
-        { init = init "cats"
+        { init = init
         , view = view
         , update = update
         , subscriptions = subscriptions
         }
 
 
+
+-- MODEL
+
+
 type alias Model =
-    { topic : String
-    , gifUrl : String
-    , errorMsg : Maybe Http.Error
-    }
+    Time
 
 
-init : String -> ( Model, Cmd Msg )
-init topic =
-    ( Model topic "waiting.gif" Nothing
-    , getRandomGif topic
-    )
+init : ( Model, Cmd Msg )
+init =
+    ( 0, Cmd.none )
+
+
+
+-- UPDATE
 
 
 type Msg
-    = MorePlease
-    | NewGif (Result Http.Error String)
+    = Tick Time
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        MorePlease ->
-            ( model, getRandomGif model.topic )
-
-        NewGif (Ok newUrl) ->
-            ( Model model.topic newUrl Nothing, Cmd.none )
-
-        NewGif (Err httpError) ->
-            ( Model model.topic model.gifUrl (Just httpError), Cmd.none )
-
-
-view : Model -> Html Msg
-view model =
-    div []
-        [ h2 [] [ text model.topic ]
-        , button [ onClick MorePlease ] [ text "More Please!" ]
-        , br [] []
-        , img [ src model.gifUrl ] []
-        , br [] []
-        , errorMsg model
-        ]
+        Tick newTime ->
+            ( newTime, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.none
+    Time.every second Tick
 
 
-getRandomGif : String -> Cmd Msg
-getRandomGif topic =
+view : Model -> Html Msg
+view model =
     let
-        url =
-            "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
-                ++ topic
+        angle =
+            turns (Time.inMinutes model)
+
+        handX =
+            toString (50 + 40 * cos angle)
+
+        handY =
+            toString (50 + 40 * sin angle)
     in
-        Http.send NewGif (Http.get url decodeGifUrl)
-
-
-errorMsg : Model -> Html msg
-errorMsg model =
-    case model.errorMsg of
-        Just msg ->
-            text <| httpErrorToString msg
-
-        Nothing ->
-            text ""
-
-
-decodeGifUrl : Decode.Decoder String
-decodeGifUrl =
-    Decode.at [ "data", "image_url" ] Decode.string
-
-
-httpErrorToString : Http.Error -> String
-httpErrorToString httpError =
-    case httpError of
-        Http.BadUrl url ->
-            "Invalid URL: " ++ url
-
-        Http.Timeout ->
-            "Timeout!"
-
-        Http.NetworkError ->
-            "Network Error!"
-
-        Http.BadPayload string response ->
-            "Bad Payload: " ++ string
-
-        Http.BadStatus response ->
-            case response.status.code of
-                400 ->
-                    "Bad Request: " ++ response.body
-
-                _ ->
-                    "Bad Status: " ++ response.body
+        svg [ viewBox "0 0 100 100", width "300px" ]
+            [ circle [ cx "50", cy "50", r "45", fill "#0B79CE" ] []
+            , line [ x1 "50", y1 "50", x2 handX, y2 handY, stroke "#023963" ] []
+            ]
