@@ -20,12 +20,13 @@ main =
 type alias Model =
     { topic : String
     , gifUrl : String
+    , errorMsg : Maybe Http.Error
     }
 
 
 init : String -> ( Model, Cmd Msg )
 init topic =
-    ( Model topic "waiting.gif"
+    ( Model topic "waiting.gif" Nothing
     , getRandomGif topic
     )
 
@@ -42,10 +43,10 @@ update msg model =
             ( model, getRandomGif model.topic )
 
         NewGif (Ok newUrl) ->
-            ( Model model.topic newUrl, Cmd.none )
+            ( Model model.topic newUrl Nothing, Cmd.none )
 
-        NewGif (Err _) ->
-            ( model, Cmd.none )
+        NewGif (Err httpError) ->
+            ( Model model.topic model.gifUrl (Just httpError), Cmd.none )
 
 
 view : Model -> Html Msg
@@ -55,6 +56,8 @@ view model =
         , button [ onClick MorePlease ] [ text "More Please!" ]
         , br [] []
         , img [ src model.gifUrl ] []
+        , br [] []
+        , errorMsg model
         ]
 
 
@@ -67,11 +70,46 @@ getRandomGif : String -> Cmd Msg
 getRandomGif topic =
     let
         url =
-            "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
+            "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="
+                ++ topic
     in
         Http.send NewGif (Http.get url decodeGifUrl)
+
+
+errorMsg : Model -> Html msg
+errorMsg model =
+    case model.errorMsg of
+        Just msg ->
+            text <| httpErrorToString msg
+
+        Nothing ->
+            text ""
 
 
 decodeGifUrl : Decode.Decoder String
 decodeGifUrl =
     Decode.at [ "data", "image_url" ] Decode.string
+
+
+httpErrorToString : Http.Error -> String
+httpErrorToString httpError =
+    case httpError of
+        Http.BadUrl url ->
+            "Invalid URL: " ++ url
+
+        Http.Timeout ->
+            "Timeout!"
+
+        Http.NetworkError ->
+            "Network Error!"
+
+        Http.BadPayload string response ->
+            "Bad Payload: " ++ string
+
+        Http.BadStatus response ->
+            case response.status.code of
+                400 ->
+                    "Bad Request: " ++ response.body
+
+                _ ->
+                    "Bad Status: " ++ response.body
